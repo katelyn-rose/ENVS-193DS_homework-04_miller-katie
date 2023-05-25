@@ -5,7 +5,10 @@ date: "`r Sys.Date()`"
 output: word_document
 message: FALSE
 ---
+# Set Up
+
 ```{r download-packages}
+# loading in the necessary packages
 library(tidyverse)
 library(here)
 library(naniar)
@@ -27,9 +30,16 @@ trout <- fish %>%
           weight = case_when(spname == "TROUTPERCH" ~ weight)) 
 
 ```
+# Problem 1
 
+## 1
+Null:
+Alternative:
+
+## 2
 ```{r visualize-missing-data}
-gg_miss_var(trout)
+gg_miss_var(trout) %>% 
+  theme(plot.caption = "Plot 1. Missing weights of perch trout")
 ```
  
 ```{r}
@@ -46,10 +56,15 @@ dev.off()
 ```
 
 ```{r}
-summary(trout_model)
+model_summary <- summary(trout_model)
+
+model_summary
 ```
 
 ```{r}
-anova
+model_squares <- anova(trout_model)
+
+model_squares
 ```
+
 
