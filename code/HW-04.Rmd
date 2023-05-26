@@ -138,7 +138,9 @@ our model predicts the correlation between the predictor variable (trout perch l
 
 ## 9.
 
-We performed a linear regression in order to analyze whether the length of a trout perch predicts its weight, our null hypothesis being that the length is not an accurate predictor of its weight. Based on our observations, 
+We performed a linear regression in order to analyze whether the length of a trout perch predicts its weight, our null hypothesis being that length is not an accurate predictor of weight. Based on our observations, 
+
+For each decrease (or increase) in the x variable, we expect the y variable to increase/decrease by the amount of the slope
 An ANOVA (Table 1) showed the test statistic to be 1,280.8, and the p-value to be < 0.001, meaning that 
 
 The sample size of our study was initially 489 observations, however, missing data for trout perch weights reduced that number to 290. The ANOVA table (Table 1) shows the test statistic to be 1,280.8, and the p-value to be < 0.001 . $R^2$ was equal to 0.8164, which shows that our model fits the observed values fairly well.
