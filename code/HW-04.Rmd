@@ -1,0 +1,178 @@
+---
+title: "Homework 4"
+author: "Katie Miller"
+date: "`r Sys.Date()`"
+output: word_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
+```
+
+# Set Up
+
+```{r download-packages}
+# loading in the necessary packages
+library(tidyverse)
+library(here)
+library(naniar)
+library(dplyr)
+library(performance)
+library(broom)
+library(flextable)
+library(ggeffects)
+library(car)
+```
+
+```{r read-in-data}
+# reading in the data using here package
+fish <- read_csv(here("data", "ntl6_v12.csv"))
+```
+
+```{r filter-data}
+# filtering data frame to extract relevant info
+trout <- fish %>% 
+  filter(spname %in% "TROUTPERCH") %>% 
+  reframe(year = case_when(spname == "TROUTPERCH" ~ year4),
+          species = case_when(spname == "TROUTPERCH" ~ spname),
+          length = case_when(spname == "TROUTPERCH" ~ length),
+          weight = case_when(spname == "TROUTPERCH" ~ weight)) 
+
+```
+
+# Problem 1
+
+## 1.
+
+Biological:
+
+Null: The length of a trout perch is not an accurate predictor of its weight.
+
+Alternative: The length of a trout perch accurately predicts its weight.
+
+Mathematical:
+
+Null: the predictor variable does not predict the response variable.
+
+Alternative: the predictor variable predicts the response variable.
+
+Null:
+
+Alternative:
+
+## 2.
+```{r visualize-missing-data}
+# visualizing missing data in the filtered perch trout dataset
+gg_miss_var(trout) + 
+  labs(caption = "Plot 1: Missing data in the observations of perch trout. There are 199 missing\nmeasurements for trout perch weight, of the 489 observations, this is about 40%.\nThis missingness in our predicted variable lowers the sample size of our dataset.")
+```
+ 
+
+ 
+ ## 3.
+```{r}
+# creating a linear model for the trout perch dataset 
+trout_model <- lm(weight ~ length, data = trout)
+```
+
+## 4.
+
+```{r}
+# plotting the trout model in a 2 by 2 grid
+par(mfrow = c(2, 2))
+plot(trout_model)
+```
+
+```{r}
+dev.off()
+```
+
+```{r}
+check_normality(trout_model)
+check_heteroscedasticity(trout_model)
+```
+
+
+## 5. 
+
+Residuals vs Fitted: the residuals are somewhat evenly distributed. There is a relatively even distribution above and below the line, however, the points are concentrated towards the middle of the plot. 
+
+Scale-Location: there is slightly more homoscedasticity of variance in this plot, however there is still a bias towards the middle. 
+
+Normal Q-Q: the residuals are fairly normally distributed. The points follow a linear path until a slight deviation around positive 2. 
+
+Residuals vs Leverage: there are a few outliers measured influential by Cook's distance.
+
+## 6.
+```{r}
+# creating a summary of the trout perch model
+model_summary <- summary(trout_model)
+
+model_summary
+```
+
+## 7.
+```{r}
+# setting up the initial ANOVA table
+model_anova <- anova(trout_model)
+```
+
+```{r}
+# creating a summary table
+model_anova_table <- tidy(model_anova) %>% 
+  mutate(across(sumsq:meansq, ~ round(.x, digits = 2))) %>% 
+  mutate(statistic = round(statistic, digits = 1)) %>% 
+  mutate(p.value = case_when(p.value < 0.001 ~ "< 0.001")) %>% 
+   mutate(term = case_when(term == "length" ~ "Trout Perch Length", 
+                           TRUE ~ term)) %>%
+  flextable() %>% 
+  set_header_labels(df = "Degrees of Freedom", 
+                    sumsq = "Sum of squares",
+                    meansq = "Mean squares",
+                    statistic = "F-statistic",
+                    p.value = "p-value")
+  
+model_anova_table
+```
+
+## 8.
+
+connection between ANOVA table and summary object
+
+## 9.
+context (i.e. what do these stats mean in
+the context of the original question)?
+null hypothesis
+test
+sample size
+test statistic
+degrees of freedom
+p-value
+significance level
+R2
+interpretation of model equation
+
+## 10.
+```{r}
+# creating the initial predictions object
+predictions <- ggpredict(trout_model, terms = "length")
+```
+
+```{r}
+predict_plot <- ggplot(data = trout,
+                       aes(x = length, y = weight)) +
+  geom_point() +
+  geom_line(data = predictions, 
+            aes(x = x, y = predicted), 
+            color = "purple", linewidth = 1) +
+  geom_ribbon(data = predictions, 
+              aes(x = x, y = predicted, ymin = conf.low, 
+                  ymax = conf.high), alpha = 0.3) +
+  theme_bw() +
+  labs(x = "Trout perch length", y = "Trout perch mass")
+
+
+predict_plot
+```
+
+
