@@ -56,10 +56,6 @@ Null: the predictor variable does not predict the response variable.
 
 Alternative: the predictor variable predicts the response variable.
 
-Null:
-
-Alternative:
-
 ## 2.
 ```{r visualize-missing-data}
 # visualizing missing data in the filtered perch trout dataset
