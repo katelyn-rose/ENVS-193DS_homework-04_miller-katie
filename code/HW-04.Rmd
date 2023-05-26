@@ -76,7 +76,8 @@ trout_model <- lm(weight ~ length, data = trout)
 par(mfrow = c(2, 2))
 plot(trout_model) 
 ```
-Figure 2. Linear models for the trout perch data set help visualize residuals and errors.
+
+Figure 2. Linear models for the trout perch data set help visualize the distrobution of residuals and errors.
 
 
 ```{r}
@@ -138,24 +139,7 @@ our model predicts the correlation between the predictor variable (trout perch l
 
 ## 9.
 
-We performed a linear regression in order to analyze whether the length of a trout perch predicts its weight, our null hypothesis being that length is not an accurate predictor of weight. Based on our observations, 
-
-For each decrease (or increase) in the x variable, we expect the y variable to increase/decrease by the amount of the slope
-An ANOVA (Table 1) showed the test statistic to be 1,280.8, and the p-value to be < 0.001, meaning that 
-
-The sample size of our study was initially 489 observations, however, missing data for trout perch weights reduced that number to 290. The ANOVA table (Table 1) shows the test statistic to be 1,280.8, and the p-value to be < 0.001 . $R^2$ was equal to 0.8164, which shows that our model fits the observed values fairly well.
-
-context (i.e. what do these stats mean in
-the context of the original question)?
-null hypothesis
-test
-sample size
-test statistic
-degrees of freedom 1
-p-value < 0.001
-significance level
-R2 0.8164
-interpretation of model equation
+We performed a linear regression in order to analyze whether the length of a trout perch predicts its weight, our null hypothesis being that length is not an accurate predictor of weight. Based on our observations, we expect the trout perch mass to increase by 0.120 for each increase in trout perch length with an $R^2$ of 0.816. Trout perch length can accurately predict trout perch mass (analysis of variance Table 1, F(1,288) = 1,280.8, p < 0.001, ⍺ = 0.05)
 
 ## 10.
 ```{r}
@@ -181,7 +165,7 @@ predict_plot <- ggplot(data = trout,
   theme_bw() +
   labs(x = "Trout perch length", 
        y = "Trout perch mass",
-       caption = "Figure 3. Predicted relationship between trout perch length and trout perch weight.\nPoints represent collected data and the line is the predicted relationship with shaded confidence interval")
+       caption = "Figure 3. Predicted relationship between trout perch length\nand trout perch weight.Points represent collected data and the\nline represents the predicted relationship with shaded confidence interval")
 
 
 predict_plot
