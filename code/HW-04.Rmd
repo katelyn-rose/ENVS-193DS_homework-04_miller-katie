@@ -42,64 +42,58 @@ trout <- fish %>%
 
 # Problem 1
 
-## 1.
+### 1.
 
-Biological:
+**Biological:**
 
 Null: The length of a trout perch is not an accurate predictor of its weight.
 
 Alternative: The length of a trout perch accurately predicts its weight.
 
-Mathematical:
+**Mathematical:**
 
 Null: the predictor variable does not predict the response variable.
 
 Alternative: the predictor variable predicts the response variable.
 
-## 2.
+### 2.
 ```{r visualize-missing-data}
 # visualizing missing data in the filtered perch trout dataset
 gg_miss_var(trout) + 
-  labs(caption = "Plot 1: Missing data in the observations of perch trout. There are 199 missing\nmeasurements for trout perch weight, of the 489 observations, this is about 40%.\nThis missingness in our predicted variable lowers the sample size of our dataset.")
+  labs(caption = "Figure 1. Missing data in the observations of trout perch. There are 199 missing\nmeasurements for trout perch weight, about 40% of the 489 total observations.\nThis missingness in our response variable lowers the sample size of our dataset.")
 ```
- 
 
- 
- ## 3.
+### 3.
 ```{r}
 # creating a linear model for the trout perch dataset 
 trout_model <- lm(weight ~ length, data = trout)
 ```
 
-## 4.
+### 4.
 
 ```{r}
 # plotting the trout model in a 2 by 2 grid
 par(mfrow = c(2, 2))
-plot(trout_model)
+plot(trout_model) 
 ```
+Figure 2. Linear models for the trout perch data set help visualize residuals and errors.
+
 
 ```{r}
 dev.off()
 ```
 
-```{r}
-check_normality(trout_model)
-check_heteroscedasticity(trout_model)
-```
+### 5. 
 
+**Residuals vs Fitted:** There is a relatively even distribution above and below the line, however, the points are clustered towards the center of the plot. Based on past examples I would say the assumption of homoscedasticity is violated.
 
-## 5. 
+**Scale-Location:** the residuals are distributed slightly more evenly in this plot, however there is still a bias towards the center. 
 
-Residuals vs Fitted: the residuals are somewhat evenly distributed. There is a relatively even distribution above and below the line, however, the points are concentrated towards the middle of the plot. 
+**Normal Q-Q:** The points follow a linear path until a slight deviation around positive 2. Based on past examples I would say the residuals are normally distributed. 
 
-Scale-Location: there is slightly more homoscedasticity of variance in this plot, however there is still a bias towards the middle. 
+**Residuals vs Leverage:** there are a few outliers measured influential by Cook's distance.
 
-Normal Q-Q: the residuals are fairly normally distributed. The points follow a linear path until a slight deviation around positive 2. 
-
-Residuals vs Leverage: there are a few outliers measured influential by Cook's distance.
-
-## 6.
+### 6.
 ```{r}
 # creating a summary of the trout perch model
 model_summary <- summary(trout_model)
@@ -116,12 +110,17 @@ model_anova <- anova(trout_model)
 ```{r}
 # creating a summary table
 model_anova_table <- tidy(model_anova) %>% 
-  mutate(across(sumsq:meansq, ~ round(.x, digits = 2))) %>% 
+  # rounding the number of significant digits shown in the table
+  mutate(across(sumsq:meansq, ~ round(.x, digits = 3))) %>% 
   mutate(statistic = round(statistic, digits = 1)) %>% 
+  # removing the scientific notation
   mutate(p.value = case_when(p.value < 0.001 ~ "< 0.001")) %>% 
+  # meaningful term title
    mutate(term = case_when(term == "length" ~ "Trout Perch Length", 
                            TRUE ~ term)) %>%
+  # turning the data frame into a flextable
   flextable() %>% 
+  # giving the headers clearer labels 
   set_header_labels(df = "Degrees of Freedom", 
                     sumsq = "Sum of squares",
                     meansq = "Mean squares",
@@ -130,22 +129,30 @@ model_anova_table <- tidy(model_anova) %>%
   
 model_anova_table
 ```
+Table 1. Analysis of variance table summarizing the statistical restults. 
 
 ## 8.
 
-connection between ANOVA table and summary object
+Though the ANOVA table provides it more succinctly, both the ANOVA and summary functions extract and represent important information about our trout perch model. The test statistic and the p-value are represented by both of these functions and can show how accurately
+our model predicts the correlation between the predictor variable (trout perch length) and the response variable (trout perch weight).
 
 ## 9.
+
+We performed a linear regression in order to analyze whether the length of a trout perch predicts its weight, our null hypothesis being that the length is not an accurate predictor of its weight. Based on our observations, 
+An ANOVA (Table 1) showed the test statistic to be 1,280.8, and the p-value to be < 0.001, meaning that 
+
+The sample size of our study was initially 489 observations, however, missing data for trout perch weights reduced that number to 290. The ANOVA table (Table 1) shows the test statistic to be 1,280.8, and the p-value to be < 0.001 . $R^2$ was equal to 0.8164, which shows that our model fits the observed values fairly well.
+
 context (i.e. what do these stats mean in
 the context of the original question)?
 null hypothesis
 test
 sample size
 test statistic
-degrees of freedom
-p-value
+degrees of freedom 1
+p-value < 0.001
 significance level
-R2
+R2 0.8164
 interpretation of model equation
 
 ## 10.
@@ -155,17 +162,24 @@ predictions <- ggpredict(trout_model, terms = "length")
 ```
 
 ```{r}
+# creating the plot of predictions
+# underlying data of trout perch dataset
 predict_plot <- ggplot(data = trout,
                        aes(x = length, y = weight)) +
   geom_point() +
+  # plotting predictions
   geom_line(data = predictions, 
             aes(x = x, y = predicted), 
             color = "purple", linewidth = 1) +
+  # plotting the confidence interval 
   geom_ribbon(data = predictions, 
               aes(x = x, y = predicted, ymin = conf.low, 
                   ymax = conf.high), alpha = 0.3) +
+  #theme and labels
   theme_bw() +
-  labs(x = "Trout perch length", y = "Trout perch mass")
+  labs(x = "Trout perch length", 
+       y = "Trout perch mass",
+       caption = "Figure 3. Predicted relationship between trout perch length and trout perch weight.\nPoints represent collected data and the line is the predicted relationship with shaded confidence interval")
 
 
 predict_plot
